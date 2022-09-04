@@ -2,19 +2,14 @@ package com.viruchith.recruitmentpals.helpers;
 
 import java.util.Map;
 
-import javax.xml.soap.Detail;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import com.viruchith.recruitmentpals.models.AdminUser;
 import com.viruchith.recruitmentpals.services.AdminUserService;
 import com.viruchith.recruitmentpals.services.PlacementCoordiantorService;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

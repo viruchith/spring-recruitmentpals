@@ -2,9 +2,6 @@ package com.viruchith.recruitmentpals.jwt;
 
 import java.util.ArrayList;
 
-import javax.transaction.UserTransaction;
-
-import org.hibernate.usertype.UserType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.User;
@@ -19,7 +16,6 @@ import com.viruchith.recruitmentpals.models.AdminUser;
 import com.viruchith.recruitmentpals.models.PlacementCoordinator;
 import com.viruchith.recruitmentpals.repos.AdminUserRepository;
 import com.viruchith.recruitmentpals.repos.PlacementCoordinatorRepository;
-import com.viruchith.recruitmentpals.services.AdminUserService;
 
 @Service
 public class AppUserDetailsService implements UserDetailsService {

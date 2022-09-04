@@ -3,7 +3,6 @@ package com.viruchith.recruitmentpals.models;
 import java.time.Instant;
 
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
@@ -22,7 +21,6 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import lombok.Data;
-import lombok.Generated;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)

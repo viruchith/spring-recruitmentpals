@@ -27,7 +27,6 @@ import com.viruchith.recruitmentpals.jwt.AppUserDetailsService;
 import com.viruchith.recruitmentpals.jwt.JwtAuthenticationRequest;
 import com.viruchith.recruitmentpals.jwt.JwtAuthenticationResponse;
 import com.viruchith.recruitmentpals.jwt.JwtUtil;
-import com.viruchith.recruitmentpals.models.AdminUser;
 import com.viruchith.recruitmentpals.models.PlacementCoordinator;
 import com.viruchith.recruitmentpals.services.PlacementCoordiantorService;
 

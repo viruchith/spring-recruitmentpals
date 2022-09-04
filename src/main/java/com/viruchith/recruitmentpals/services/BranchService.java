@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.viruchith.recruitmentpals.models.Branch;
-import com.viruchith.recruitmentpals.models.Degree;
 import com.viruchith.recruitmentpals.repos.BranchRepository;
 
 

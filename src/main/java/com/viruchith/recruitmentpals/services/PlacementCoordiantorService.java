@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.viruchith.recruitmentpals.models.AdminUser;
 import com.viruchith.recruitmentpals.models.PlacementCoordinator;
 import com.viruchith.recruitmentpals.repos.PlacementCoordinatorRepository;
 
