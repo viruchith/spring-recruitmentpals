@@ -1,6 +1,7 @@
 package com.viruchith.recruitmentpals.services;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,7 @@ public class DegreeService {
 		return degreeRepository.findAll();
 	}
 	
-	public Degree findFirstById(long id){
-		return degreeRepository.findById(id).get();
+	public Optional<Degree> findFirstById(long id){
+		return degreeRepository.findById(id);
 	}
 }

@@ -1,12 +1,16 @@
 package com.viruchith.recruitmentpals.models;
 
 import java.time.Instant;
+import java.util.List;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -49,6 +53,9 @@ public class PlacementCoordinator {
 	@NotBlank
 	@Size(min = 2,max = 256)
 	private String lastName;
+	
+	@ManyToMany(cascade = CascadeType.ALL)
+	private Set<AcademicGroup> academicGroups;
 	
 	@CreatedDate
 	private Instant createdAt;

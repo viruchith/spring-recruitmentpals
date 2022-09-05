@@ -4,6 +4,9 @@ http localhost:8080/admin/login username=admin password=admin123
 http localhost:8080/admin/hello Authorization:eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsInVzZXJUeXBlIjoiQURNSU4iLCJleHAiOjE2NjI0NzI2NzMsImlhdCI6MTY2MjIxMzQ3M30.mJ_oDUx5erdRBtkePtGMcoPfUw5ID1qOcuEYsnSWhze7C1nGGgnDZZiqlveCvqWzaevVE2x7Opu287rwVXCjsQ
 
 
+http localhost:8080/coordinator/login username=v@g.com password=admin123
+
+
 http POST localhost:8080/coordinator Authorization:eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsInVzZXJUeXBlIjoiQURNSU4iLCJleHAiOjE2NjI1MjEzNjEsImlhdCI6MTY2MjI2MjE2MX0.CLvF-mxjkP3pAVWeQq4bR_GJCHx83x1-sDNYd504VAbzyUcqQEpzJkko5l1yfYbvbyXcGAsMJjepwxieeoNiaw email=v@g.com password=admin123 firstName=Viruchith lastName=Ganesan
 
 
@@ -14,3 +17,7 @@ http localhost:8080/academicgroup/degree Authorization:eyJhbGciOiJIUzUxMiJ9.eyJz
 
 
 http localhost:8080/academicgroup Authorization:eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ2QGcuY29tIiwidXNlclR5cGUiOiJDT09SRElOQVRPUiIsImV4cCI6MTY2MjUzNDA5OCwiaWF0IjoxNjYyMjc0ODk4fQ.POdiGxF9d1AV0V0Gn12hu7CrrQWToW3SwYezcC5n_QLEYRCy71VTqgkuxyINPsmhkixQDYhi_Hw02fv850c7Ng batchStartYear=2019 batchEndYear=2023 degree[id]:=17 branch[id]:=14
+
+
+
+http localhost:8080/admin/password Authorization:eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsInVzZXJUeXBlIjoiQURNSU4iLCJleHAiOjE2NjI1NTYyMjcsImlhdCI6MTY2MjI5NzAyN30.gxDTfuMbpT3bkry2QCmidmSvUanw5pffP-5Z-SCFaLv5A0VRJqxMtVp6unN-0krLl2cfRY-1V3YJMrn9suZGjA password=admin321 newPassword=admin123

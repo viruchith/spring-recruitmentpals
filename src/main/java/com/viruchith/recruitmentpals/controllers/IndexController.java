@@ -21,9 +21,16 @@ public class IndexController {
 	
 	@GetMapping("")
 	public ResponseEntity<?> hello() {
-		AdminUser adminUser = adminUserService.findFirstByUsername("admin");
-		adminUser.setPassword(adminUserService.encodePassword("admin123"));
-		System.out.println(adminUser);
+		
+//		AdminUser user = new AdminUser();
+//		user.setUsername("admin1");
+//		user.setPassword(adminUserService.encodePassword("admin123"));
+//		
+//		adminUserService.saveAdminUser(user);
+		
+//		AdminUser adminUser = adminUserService.findFirstByUsername("admin");
+//		adminUser.setPassword(adminUserService.encodePassword("admin123"));
+//		System.out.println(adminUser);
 		Map<Object,Object> map = new HashMap<>();
 		map.put("success", true);
 		map.put("message", "Hello World !");

@@ -1,5 +1,7 @@
 package com.viruchith.recruitmentpals.controllers;
 
+import java.util.Optional;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,21 +48,21 @@ public class UtilitiesController {
 		//ALLOW only ADMIN and COORDINATOR to add degree
 		if(authenticationHelper.getUserType().equals(UserTypes.ADMIN) || authenticationHelper.getUserType().equals(UserTypes.COORDINATOR)) {
 			
-			Degree degree = degreeService.findFirstById(academicGroup.getDegree().getId());
+			Optional<Degree> degreeOptional = degreeService.findFirstById(academicGroup.getDegree().getId());
 			
-			Branch branch = branchService.findFirstById(academicGroup.getBranch().getId());
+			Optional<Branch> branchOptional = branchService.findFirstById(academicGroup.getBranch().getId());
 			
-			if(degree==null) {
+			if(!degreeOptional.isPresent()) {
 				return ResponseEntity.ok(new StandardResponse(false,"Degree with id : "+academicGroup.getDegree().getId()+" not found !"));
 			}
 			
-			if(branch==null){
+			if(!branchOptional.isPresent()){
 				return ResponseEntity.ok(new StandardResponse(false,"Branch with id : "+academicGroup.getBranch().getId()+" not found !"));
 			}
 			
-			academicGroup.setDegree(degree);
+			academicGroup.setDegree(degreeOptional.get());
 			
-			academicGroup.setBranch(branch);
+			academicGroup.setBranch(branchOptional.get());
 			
 			try {
 				academicGroup = academicGroupService.saveAcademicGroup(academicGroup);

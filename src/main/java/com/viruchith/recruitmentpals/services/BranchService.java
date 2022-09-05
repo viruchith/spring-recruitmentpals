@@ -1,6 +1,7 @@
 package com.viruchith.recruitmentpals.services;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,7 +24,7 @@ public class BranchService {
 		return branchRepository.findAll();
 	}
 	
-	public Branch findFirstById(long id){
-		return branchRepository.findById(id).get();
+	public Optional<Branch> findFirstById(long id){
+		return branchRepository.findById(id);
 	}
 }

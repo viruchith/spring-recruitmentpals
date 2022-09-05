@@ -21,4 +21,6 @@ public class PasswordChangeRequest {
 	@NotBlank
 	@Size(min = 8 , message = "New Password must be greater than 8 characters in length !")
 	private String newPassword;
+	
+	private long userId;
 }
