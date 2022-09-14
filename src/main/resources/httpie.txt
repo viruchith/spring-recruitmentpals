@@ -1,10 +1,15 @@
 http localhost:8080/admin/login username=admin password=admin123
 
+export ADMIN_TOKEN=
 
-http localhost:8080/admin/hello Authorization:eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsInVzZXJUeXBlIjoiQURNSU4iLCJleHAiOjE2NjI0NzI2NzMsImlhdCI6MTY2MjIxMzQ3M30.mJ_oDUx5erdRBtkePtGMcoPfUw5ID1qOcuEYsnSWhze7C1nGGgnDZZiqlveCvqWzaevVE2x7Opu287rwVXCjsQ
+http localhost:8080/admin/hello Authorization:"$ADMIN_TOKEN"
+
 
 
 http localhost:8080/coordinator/login username=v@g.com password=admin123
+
+
+export COORDINATOR_TOKEN="eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ2QGcuY29tIiwidXNlclR5cGUiOiJDT09SRElOQVRPUiIsImV4cCI6MTY2MzQyMTUyMCwidXNlcklkIjo2LCJpYXQiOjE2NjMxNjIzMjB9.iY-rqW9ezJt9R22fM_JlGKxA0nJXh4AJyissnTB2LznFlUebHdUYWsoEYHQhJnPkCas2p3y_d4xcb-OXTrlQ5g"
 
 
 http POST localhost:8080/coordinator Authorization:eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsInVzZXJUeXBlIjoiQURNSU4iLCJleHAiOjE2NjI1MjEzNjEsImlhdCI6MTY2MjI2MjE2MX0.CLvF-mxjkP3pAVWeQq4bR_GJCHx83x1-sDNYd504VAbzyUcqQEpzJkko5l1yfYbvbyXcGAsMJjepwxieeoNiaw email=v@g.com password=admin123 firstName=Viruchith lastName=Ganesan

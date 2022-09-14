@@ -28,6 +28,7 @@ import com.viruchith.recruitmentpals.helpers.PasswordChangeRequest;
 import com.viruchith.recruitmentpals.helpers.StandardMessages;
 import com.viruchith.recruitmentpals.helpers.StandardResponse;
 import com.viruchith.recruitmentpals.helpers.UserTypes;
+import com.viruchith.recruitmentpals.helpers.evaluators.ActionEvaluator;
 import com.viruchith.recruitmentpals.jwt.AppUserDetailsService;
 import com.viruchith.recruitmentpals.jwt.JwtAuthenticationRequest;
 import com.viruchith.recruitmentpals.jwt.JwtAuthenticationResponse;
@@ -58,14 +59,17 @@ public class PlacementCoordiantorController {
 	@Autowired
 	private AuthenticationHelper authenticationHelper;
 	
+	@Autowired
+	private ActionEvaluator actionEvaluator;
+	
 	@PostMapping("")
 	public ResponseEntity<StandardResponse> create(@RequestBody @Valid PlacementCoordinator placementCoordinator) {
 		authenticationHelper.setAuthentication(SecurityContextHolder.getContext());
 		
-		if(authenticationHelper.getUserType().equals(UserTypes.ADMIN)) {
-			PlacementCoordinator coordiantor = placementCoordiantorService.findFirstByEmail(placementCoordinator.getEmail());
+		if(ActionEvaluator.isAdmin(authenticationHelper)) {
+			PlacementCoordinator coordinator = placementCoordiantorService.findFirstByEmail(placementCoordinator.getEmail());
 			
-			if(coordiantor!=null) {
+			if(coordinator!=null) {
 				return ResponseEntity.ok(new StandardResponse(false,String.format(StandardMessages.USER_ALREADY_EXISTS,UserTypes.COORDINATOR,"username",placementCoordinator.getEmail())));
 			}
 			
@@ -82,7 +86,7 @@ public class PlacementCoordiantorController {
 	@GetMapping("")
 	public ResponseEntity<StandardResponse> fetchAllPlacementCoordinators(){
 		authenticationHelper.setAuthentication(SecurityContextHolder.getContext());
-		if(authenticationHelper.getUserType().equals(UserTypes.ADMIN)){
+		if(ActionEvaluator.isAdmin(authenticationHelper)){
 			List<NoPasswordPlacementCoordinator> placementCoordinators = placementCoordiantorService.findAllNoPassword();
 			StandardResponse response = new StandardResponse(true,"All "+UserTypes.COORDINATOR+" users fetched successfully !");
 			response.addData("coordinators", placementCoordinators);
@@ -90,6 +94,21 @@ public class PlacementCoordiantorController {
 		}
 		return ResponseEntity.ok(new StandardResponse(false,StandardMessages.ADMIN_ONLY));
 	}
+	
+	
+	@GetMapping("{coordinatorId}")
+	public ResponseEntity<StandardResponse> fetchPlacementCoordinatorById(@PathVariable long coordinatorId){
+		authenticationHelper.setAuthentication(SecurityContextHolder.getContext());
+		if(ActionEvaluator.isAdmin(authenticationHelper)){
+			NoPasswordPlacementCoordinator placementCoordinator = placementCoordiantorService.findFirstByIdNoPassword(coordinatorId);
+			StandardResponse response = new StandardResponse(true,"All "+UserTypes.COORDINATOR+" users fetched successfully !");
+			response.addData("coordinator", placementCoordinator);
+			return ResponseEntity.ok(response);
+		}
+		return ResponseEntity.ok(new StandardResponse(false,StandardMessages.ADMIN_ONLY));
+	}
+
+	
 	
 	@PostMapping("/login")
 	public ResponseEntity<JwtAuthenticationResponse> login(@RequestBody JwtAuthenticationRequest jwtAuthenticationRequest){
@@ -100,82 +119,56 @@ public class PlacementCoordiantorController {
 		}
 
 		UserDetails userDetails = appUserDetailsService.loadUserByTypeAndUsername(jwtAuthenticationRequest.getUsername(),UserTypes.COORDINATOR);
-
-		String token = jwtUtil.generateToken(userDetails,UserTypes.COORDINATOR);
 		
+		PlacementCoordinator placementCoordinator = placementCoordiantorService.findFirstByEmail(jwtAuthenticationRequest.getUsername());
+		
+		String token = jwtUtil.generateToken(userDetails,UserTypes.COORDINATOR,placementCoordinator.getId());
 		
 		return ResponseEntity.ok(new JwtAuthenticationResponse(true, "Successful !", token));
 	}
+		
 	
-	
-	
-	
-	@PostMapping("/password")
-	public ResponseEntity<StandardResponse> changePassword(@RequestBody @Valid PasswordChangeRequest passwordChangeRequest){
+	@PostMapping("/{coordinatorId}/password")
+	public ResponseEntity<StandardResponse> changePassword(@PathVariable long coordinatorId,@RequestBody @Valid PasswordChangeRequest passwordChangeRequest){
 		//TODO abstract AdminPlacementCoordinatorStudentPerformsStudentAction
 		
 		authenticationHelper.setAuthentication(SecurityContextHolder.getContext());
+		actionEvaluator.setAuthenticationHelper(authenticationHelper);
 		
-		if(authenticationHelper.getUserType().equals(UserTypes.ADMIN) || authenticationHelper.getUserType().equals(UserTypes.COORDINATOR)) {
-			
-			PlacementCoordinator placementCoordinator;
-			
-			if(authenticationHelper.getUserType().equals(UserTypes.ADMIN) ) {
-		
-				if(passwordChangeRequest.getUserId()==0) {
-					return ResponseEntity.ok(new StandardResponse(false,"Missing COORDINATOR Id !"));
+		if(actionEvaluator.isUserAuthorized(UserTypes.ADMIN,UserTypes.COORDINATOR)){
+			if(actionEvaluator.canAdminOrCoordinatorPerformCoordinatorAction(coordinatorId)) {
+				Optional<PlacementCoordinator> placementCoordinatorOptional = placementCoordiantorService.findFirstById(coordinatorId);
+				if (placementCoordinatorOptional.isPresent()) {
+					PlacementCoordinator placementCoordinator = placementCoordinatorOptional.get();
+					if( ActionEvaluator.isCoordinator(authenticationHelper) && !placementCoordiantorService.validatePassword(placementCoordinator,passwordChangeRequest.getPassword())) {
+						return ResponseEntity.ok(new StandardResponse(false,"Incorrect Current Password !"));
+					}else{
+						String encoded = placementCoordiantorService.encodePassword(passwordChangeRequest.getNewPassword());
+						placementCoordinator.setPassword(encoded);				
+						placementCoordiantorService.savePlacementCoordinator(placementCoordinator);
+						return ResponseEntity.ok(new StandardResponse(true,"Password updated successfully !"));
+					}
 				}
-				
-				Optional<PlacementCoordinator> placementCoordinatorOptional = placementCoordiantorService.findFirstById(passwordChangeRequest.getUserId());
-				
-				if(!placementCoordinatorOptional.isPresent()) {
-					return ResponseEntity.ok(new StandardResponse(false,"COORDINATOR Does not exist !"));
-				}
-				
-				placementCoordinator = placementCoordinatorOptional.get();
-			}else {
-				placementCoordinator = placementCoordiantorService.findFirstByEmail(authenticationHelper.getUsername());
-			}
-			
-									
-			if(placementCoordiantorService.validatePassword(placementCoordinator,passwordChangeRequest.getPassword())) {
-				String encoded = placementCoordiantorService.encodePassword(passwordChangeRequest.getNewPassword());
-				placementCoordinator.setPassword(encoded);				
-				placementCoordiantorService.savePlacementCoordinator(placementCoordinator);
-				return ResponseEntity.ok(new StandardResponse(true,"Password updated successfully !"));
-			}else{
-				return ResponseEntity.ok(new StandardResponse(false,"Incorrect Current Password !"));
 			}
 		}
 		
-		return ResponseEntity.ok(new StandardResponse(false,StandardMessages.ADMIN_ONLY));
+		return ResponseEntity.ok(actionEvaluator.getErrorResponse());
+
 	}
 	
-	@GetMapping("{id}")
-	public ResponseEntity<StandardResponse> fetchById(@PathVariable long id){
-		authenticationHelper.setAuthentication(SecurityContextHolder.getContext());		
-		if(authenticationHelper.getUserType().equals(UserTypes.ADMIN) || authenticationHelper.getUserType().equals(UserTypes.COORDINATOR)){
-			NoPasswordPlacementCoordinator placementCoordinator = placementCoordiantorService.findFirstByIdNoPassword(id);
-			StandardResponse response = new StandardResponse(true, UserTypes.COORDINATOR+" user fetched successfully !");
-			response.addData("coordinator", placementCoordinator);
-			return ResponseEntity.ok(response);
-		}
-		return ResponseEntity.ok(new StandardResponse(false,StandardMessages.ADMIN_AND_COORDINATOR_ONLY));
-	}
 	
 	//TODO Update Coordinator
-	
-	@DeleteMapping("/{id}")
-	public ResponseEntity<StandardResponse> deletePlacementCoordinator(@PathVariable long id){
+	@DeleteMapping("/{coordinatorId}")
+	public ResponseEntity<StandardResponse> deletePlacementCoordinator(@PathVariable long coordintorId){
 		authenticationHelper.setAuthentication(SecurityContextHolder.getContext());
 		
-		if(authenticationHelper.getUserType().equals(UserTypes.ADMIN)) {
-			Optional<PlacementCoordinator> optional = placementCoordiantorService.findFirstById(id);
+		if(ActionEvaluator.isAdmin(authenticationHelper)) {
+			Optional<PlacementCoordinator> optional = placementCoordiantorService.findFirstById(coordintorId);
 			if(!optional.isPresent()) {
-				return ResponseEntity.ok(new StandardResponse(false,String.format("%S user with ID \"%d\" does not exist !",UserTypes.COORDINATOR,id)));
+				return ResponseEntity.ok(new StandardResponse(false,String.format("%S user with ID \"%d\" does not exist !",UserTypes.COORDINATOR,coordintorId)));
 			}else {
 				placementCoordiantorService.deletePlacementCoordinator(optional.get());
-				return ResponseEntity.ok(new StandardResponse(true,String.format("%S user with ID \"%d\" was deleted successfully !",UserTypes.COORDINATOR,id)));				
+				return ResponseEntity.ok(new StandardResponse(true,String.format("%S user with ID \"%d\" was deleted successfully !",UserTypes.COORDINATOR,coordintorId)));				
 			}
 		}
 		

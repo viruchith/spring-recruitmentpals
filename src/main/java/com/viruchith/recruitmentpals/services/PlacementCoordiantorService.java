@@ -65,6 +65,11 @@ public class PlacementCoordiantorService {
 		return placementCoordinatorRepository.findBy();
 	}
 	
+	public boolean isIDPresent(long id) {
+		Optional<PlacementCoordinator> placementCoordinatorOptional = findFirstById(id);
+		return placementCoordinatorOptional.isPresent();
+	}
+	
 	
 	
 	

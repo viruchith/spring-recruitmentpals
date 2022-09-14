@@ -17,6 +17,7 @@ import com.viruchith.recruitmentpals.helpers.AuthenticationHelper;
 import com.viruchith.recruitmentpals.helpers.StandardMessages;
 import com.viruchith.recruitmentpals.helpers.StandardResponse;
 import com.viruchith.recruitmentpals.helpers.UserTypes;
+import com.viruchith.recruitmentpals.helpers.evaluators.ActionEvaluator;
 import com.viruchith.recruitmentpals.jwt.AppUserDetailsService;
 import com.viruchith.recruitmentpals.models.AcademicGroup;
 import com.viruchith.recruitmentpals.models.Branch;
@@ -45,8 +46,8 @@ public class UtilitiesController {
 	@PostMapping("/academicgroup")
 	public ResponseEntity<StandardResponse> createAcademicGroup(@RequestBody @Valid AcademicGroup academicGroup){
 		AuthenticationHelper authenticationHelper = new AuthenticationHelper(SecurityContextHolder.getContext().getAuthentication());
-		//ALLOW only ADMIN and COORDINATOR to add degree
-		if(authenticationHelper.getUserType().equals(UserTypes.ADMIN) || authenticationHelper.getUserType().equals(UserTypes.COORDINATOR)) {
+		//ALLOW only ADMIN and COORDINATOR to add academicgroup
+		if(ActionEvaluator.isAdmin(authenticationHelper) || ActionEvaluator.isCoordinator(authenticationHelper)) {
 			
 			Optional<Degree> degreeOptional = degreeService.findFirstById(academicGroup.getDegree().getId());
 			
@@ -95,7 +96,7 @@ public class UtilitiesController {
 	public ResponseEntity<StandardResponse> createDegree(@RequestBody @Valid Degree degree){
 		AuthenticationHelper authenticationHelper = new AuthenticationHelper(SecurityContextHolder.getContext().getAuthentication());
 		//ALLOW only ADMIN and COORDINATOR to add degree
-		if(authenticationHelper.getUserType().equals(UserTypes.ADMIN) || authenticationHelper.getUserType().equals(UserTypes.COORDINATOR)) {
+		if(ActionEvaluator.isAdmin(authenticationHelper) || ActionEvaluator.isCoordinator(authenticationHelper)) {
 			try {
 				degree = degreeService.saveDegree(degree);
 			} catch (Exception e) {

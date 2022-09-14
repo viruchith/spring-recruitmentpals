@@ -42,6 +42,10 @@ public class AuthenticationHelper {
 		return authentication.getName();
 	}
 	
+	public long getUserId() {
+		return (long) details.get("userId");
+	}
+	
 	public Object getUser(){
 		String userType = details.get("userType")+"";
 		if(userType.equals(UserTypes.ADMIN)) {

@@ -26,6 +26,7 @@ import com.viruchith.recruitmentpals.helpers.PasswordChangeRequest;
 import com.viruchith.recruitmentpals.helpers.StandardMessages;
 import com.viruchith.recruitmentpals.helpers.StandardResponse;
 import com.viruchith.recruitmentpals.helpers.UserTypes;
+import com.viruchith.recruitmentpals.helpers.evaluators.ActionEvaluator;
 import com.viruchith.recruitmentpals.jwt.AppUserDetailsService;
 import com.viruchith.recruitmentpals.jwt.JwtAuthenticationRequest;
 import com.viruchith.recruitmentpals.jwt.JwtAuthenticationResponse;
@@ -52,7 +53,10 @@ public class AdminController {
 	
 	@Autowired
 	private AuthenticationHelper authenticationHelper;
-			
+	
+	@Autowired
+	private ActionEvaluator actionEvaluator;
+	
 	@PostMapping("/login")
 	public JwtAuthenticationResponse login(@RequestBody @Valid JwtAuthenticationRequest jwtAuthenticationRequest) {
 		
@@ -64,47 +68,52 @@ public class AdminController {
 		
 		UserDetails userDetails = appUserDetailsService.loadUserByTypeAndUsername(jwtAuthenticationRequest.getUsername(),UserTypes.ADMIN);
 		
-		String token = jwtUtil.generateToken(userDetails,UserTypes.ADMIN);
+		AdminUser adminUser = adminUserService.findFirstByUsername(jwtAuthenticationRequest.getUsername());
+		
+		String token = jwtUtil.generateToken(userDetails,UserTypes.ADMIN,adminUser.getId());
 		
 		return new JwtAuthenticationResponse(true, "Successful !", token);
 	}
 	
-	@PostMapping("/password")
-	public ResponseEntity<StandardResponse> changePassword(@RequestBody @Valid PasswordChangeRequest passwordChangeRequest){
+	@PostMapping("{adminId}/password")
+	public ResponseEntity<StandardResponse> changePassword(@PathVariable long adminId,@RequestBody @Valid PasswordChangeRequest passwordChangeRequest){
 		authenticationHelper.setAuthentication(SecurityContextHolder.getContext());
 		
-		if(authenticationHelper.getUserType().equals(UserTypes.ADMIN)) {
-			AdminUser adminUser = (AdminUser)authenticationHelper.getUser();
-
-			if(adminUserService.validatePassword(adminUser,passwordChangeRequest.getPassword())) {
+		if(ActionEvaluator.isAdmin(authenticationHelper)) {
+			Optional<AdminUser> adminUserOptional = adminUserService.findFirstById(adminId);
+			
+			if(!adminUserOptional.isPresent()) {
+				return ResponseEntity.ok(new StandardResponse(false,"The "+UserTypes.ADMIN+" user with id : "+adminId+" does not exist !"));
+			}
+			
+			AdminUser adminUser = adminUserOptional.get();
+			
 				String encoded = adminUserService.encodePassword(passwordChangeRequest.getNewPassword());
 				adminUser.setPassword(encoded);				
 				adminUserService.saveAdminUser(adminUser);
 				return ResponseEntity.ok(new StandardResponse(true,"Password updated successfully !"));
-			}else{
-				return ResponseEntity.ok(new StandardResponse(false,"Incorrect Current Password !"));
-			}
+			
 		}
 		
 		return ResponseEntity.ok(new StandardResponse(false,StandardMessages.ADMIN_ONLY));
 	}
 	
 	
-	@DeleteMapping("/{id}")
-	public ResponseEntity<StandardResponse> deletePlacementCoordinator(@PathVariable long id){
+	@DeleteMapping("/{adminId}")
+	public ResponseEntity<StandardResponse> deletePlacementCoordinator(@PathVariable long adminId){
 		authenticationHelper.setAuthentication(SecurityContextHolder.getContext());
 		
-		if(authenticationHelper.getUserType().equals(UserTypes.ADMIN)) {
-			Optional<AdminUser> optional = adminUserService.findFirstById(id);
+		if(ActionEvaluator.isAdmin(authenticationHelper)) {
+			Optional<AdminUser> optional = adminUserService.findFirstById(adminId);
 			if(!optional.isPresent()) {
-				return ResponseEntity.ok(new StandardResponse(false,String.format("%S user with ID \"%d\" does not exist !",UserTypes.ADMIN,id)));
+				return ResponseEntity.ok(new StandardResponse(false,String.format("%S user with ID \"%d\" does not exist !",UserTypes.ADMIN,adminId)));
 			}else {
 				AdminUser adminUser = optional.get();
 				if(adminUser.getUsername().equals(authenticationHelper.getUsername())){
 					return ResponseEntity.ok(new StandardResponse(false,"You cannot delete yourself !"));
 				}
 				adminUserService.deleteAdminUser(adminUser);
-				return ResponseEntity.ok(new StandardResponse(false,String.format("%S user with ID \"%d\" was deleted successfully !",UserTypes.ADMIN,id)));				
+				return ResponseEntity.ok(new StandardResponse(false,String.format("%S user with ID \"%d\" was deleted successfully !",UserTypes.ADMIN,adminId)));				
 			}
 		}
 		
