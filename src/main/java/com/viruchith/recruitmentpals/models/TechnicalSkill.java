@@ -22,22 +22,20 @@ import lombok.Data;
 @Table(name = "recruitment_technical_skills")
 @Data
 public class TechnicalSkill {
-	
+
 	@javax.persistence.Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
-	
+
 	@NotNull
 	@NotBlank
 	@Column(unique = true)
 	private String title;
-	
+
 	@CreatedDate
 	private Instant createdAt;
-	
+
 	@LastModifiedDate
 	private Instant updateAt;
-	
-	
-	
+
 }

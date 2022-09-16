@@ -14,13 +14,13 @@ import lombok.NoArgsConstructor;
 public class PasswordChangeRequest {
 	@NotNull
 	@NotBlank
-	@Size(min = 8 , message = "Password must be greater than 8 characters in length !")
+	@Size(min = 8, message = "Password must be greater than 8 characters in length !")
 	private String password;
-	
+
 	@NotNull
 	@NotBlank
-	@Size(min = 8 , message = "New Password must be greater than 8 characters in length !")
+	@Size(min = 8, message = "New Password must be greater than 8 characters in length !")
 	private String newPassword;
-	
+
 	private long userId;
 }

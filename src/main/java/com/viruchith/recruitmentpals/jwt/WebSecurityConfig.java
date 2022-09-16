@@ -15,36 +15,30 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
-	
-	
+
 	@Autowired
 	private AppUserDetailsService appUserDetailsService;
-	
+
 	@Autowired
 	private JwtRequestFilter jwtRequestFilter;
-	
-	
+
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
-		
-	
+
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-				
-		http.csrf().disable()
-		.authorizeRequests().antMatchers("/hello","/*/login").permitAll().
-				anyRequest().authenticated().and().
-				exceptionHandling().and().sessionManagement()
-		.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-		http.cors();
-http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
-	return http.build();
+		http.csrf().disable().authorizeRequests().antMatchers("/hello", "/*/login").permitAll().anyRequest()
+				.authenticated().and().exceptionHandling().and().sessionManagement()
+				.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+		http.cors();
+		http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+
+		return http.build();
 	}
-	
-	
+
 	@Bean
 	public UserDetailsService userDetailsService() {
 		return appUserDetailsService;

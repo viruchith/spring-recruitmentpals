@@ -25,17 +25,16 @@ public class Branch {
 	@javax.persistence.Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id;
-	
+
 	@NotNull
 	@NotBlank
 	@Column(unique = true)
 	private String title;
-	
+
 	@CreatedDate
 	private Instant createdAt;
-	
+
 	@LastModifiedDate
 	private Instant updateAt;
 
-	
 }

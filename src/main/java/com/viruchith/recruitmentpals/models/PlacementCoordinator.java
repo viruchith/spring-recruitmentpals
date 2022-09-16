@@ -1,7 +1,6 @@
 package com.viruchith.recruitmentpals.models;
 
 import java.time.Instant;
-import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -23,7 +22,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import lombok.Data;
 
-
 @Entity
 @Table(name = "recruitment_placement_coordiantors")
 @EntityListeners(AuditingEntityListener.class)
@@ -32,35 +30,35 @@ public class PlacementCoordinator {
 	@javax.persistence.Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id;
-	
+
 	@NotNull
 	@NotBlank
 	@Email
 	@Column(unique = true)
 	private String email;
-	
+
 	@NotNull
 	@NotBlank
-	@Size(min = 8,max = 200)
+	@Size(min = 8, max = 200)
 	private String password;
-	
+
 	@NotNull
 	@NotBlank
-	@Size(min = 2,max = 256)
+	@Size(min = 2, max = 256)
 	private String firstName;
-	
+
 	@NotNull
 	@NotBlank
-	@Size(min = 2,max = 256)
+	@Size(min = 2, max = 256)
 	private String lastName;
-	
+
 	@ManyToMany(cascade = CascadeType.ALL)
 	private Set<AcademicGroup> academicGroups;
-	
+
 	@CreatedDate
 	private Instant createdAt;
-	
+
 	@LastModifiedDate
 	private Instant updateAt;
-	
+
 }

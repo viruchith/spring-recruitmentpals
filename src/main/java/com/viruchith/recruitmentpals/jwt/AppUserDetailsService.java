@@ -19,47 +19,46 @@ import com.viruchith.recruitmentpals.repos.PlacementCoordinatorRepository;
 
 @Service
 public class AppUserDetailsService implements UserDetailsService {
-	
+
 	@Autowired
 	private AdminUserRepository adminUserRepository;
-	
+
 	@Autowired
 	private PlacementCoordinatorRepository placementCoordinatorRepository;
-	
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		String[] userAndType = username.split("\\|");
-	    
+
 		username = userAndType[0];
-		
+
 		String userType = userAndType[1];
-		
-		if(userType.equals(UserTypes.ADMIN)) {
+
+		if (userType.equals(UserTypes.ADMIN)) {
 			AdminUser adminUser = adminUserRepository.findFirstByUsername(username);
-			
-			if(adminUser == null) {
-				throw new BadCredentialsException(String.format(StandardMessages.USER_NOT_FOUND, userType,username));
+
+			if (adminUser == null) {
+				throw new BadCredentialsException(String.format(StandardMessages.USER_NOT_FOUND, userType, username));
 			}
-			
-			return new User(adminUser.getUsername(),adminUser.getPassword(), new ArrayList<>());
-		
-		}else if(userType.equals(UserTypes.COORDINATOR)) {
+
+			return new User(adminUser.getUsername(), adminUser.getPassword(), new ArrayList<>());
+
+		} else if (userType.equals(UserTypes.COORDINATOR)) {
 			PlacementCoordinator placementCoordinator = placementCoordinatorRepository.findFirstByEmail(username);
-			
-			if(placementCoordinator==null) {
-				throw new BadCredentialsException(String.format(StandardMessages.USER_NOT_FOUND, userType,username));
+
+			if (placementCoordinator == null) {
+				throw new BadCredentialsException(String.format(StandardMessages.USER_NOT_FOUND, userType, username));
 			}
-			
-			return new User(placementCoordinator.getEmail(),placementCoordinator.getPassword(), new ArrayList<>());
+
+			return new User(placementCoordinator.getEmail(), placementCoordinator.getPassword(), new ArrayList<>());
 
 		}
-		
+
 		return null;
 	}
-	
-	public UserDetails loadUserByTypeAndUsername(String username,String Type) {
-		return loadUserByUsername(username+"|"+Type);
+
+	public UserDetails loadUserByTypeAndUsername(String username, String Type) {
+		return loadUserByUsername(username + "|" + Type);
 	}
 
 }

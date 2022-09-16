@@ -32,96 +32,99 @@ import com.viruchith.recruitmentpals.jwt.JwtAuthenticationRequest;
 import com.viruchith.recruitmentpals.jwt.JwtAuthenticationResponse;
 import com.viruchith.recruitmentpals.jwt.JwtUtil;
 import com.viruchith.recruitmentpals.models.AdminUser;
-import com.viruchith.recruitmentpals.models.PlacementCoordinator;
 import com.viruchith.recruitmentpals.services.AdminUserService;
 
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
-	
+
 	@Autowired
 	private AdminUserService adminUserService;
-	
+
 	@Autowired
 	private AuthenticationManager authenticationManager;
-	
+
 	@Autowired
 	private AppUserDetailsService appUserDetailsService;
-	
+
 	@Autowired
 	private JwtUtil jwtUtil;
-	
+
 	@Autowired
 	private AuthenticationHelper authenticationHelper;
-	
+
 	@Autowired
 	private ActionEvaluator actionEvaluator;
-	
+
 	@PostMapping("/login")
 	public JwtAuthenticationResponse login(@RequestBody @Valid JwtAuthenticationRequest jwtAuthenticationRequest) {
-		
+
 		try {
-			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(jwtAuthenticationRequest.getUsername()+"|"+UserTypes.ADMIN, jwtAuthenticationRequest.getPassword()));
+			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+					jwtAuthenticationRequest.getUsername() + "|" + UserTypes.ADMIN,
+					jwtAuthenticationRequest.getPassword()));
 		} catch (BadCredentialsException e) {
 			return new JwtAuthenticationResponse(false, e.getMessage(), null);
 		}
-		
-		UserDetails userDetails = appUserDetailsService.loadUserByTypeAndUsername(jwtAuthenticationRequest.getUsername(),UserTypes.ADMIN);
-		
+
+		UserDetails userDetails = appUserDetailsService
+				.loadUserByTypeAndUsername(jwtAuthenticationRequest.getUsername(), UserTypes.ADMIN);
+
 		AdminUser adminUser = adminUserService.findFirstByUsername(jwtAuthenticationRequest.getUsername());
-		
-		String token = jwtUtil.generateToken(userDetails,UserTypes.ADMIN,adminUser.getId());
-		
+
+		String token = jwtUtil.generateToken(userDetails, UserTypes.ADMIN, adminUser.getId());
+
 		return new JwtAuthenticationResponse(true, "Successful !", token);
 	}
-	
+
 	@PostMapping("{adminId}/password")
-	public ResponseEntity<StandardResponse> changePassword(@PathVariable long adminId,@RequestBody @Valid PasswordChangeRequest passwordChangeRequest){
+	public ResponseEntity<StandardResponse> changePassword(@PathVariable long adminId,
+			@RequestBody @Valid PasswordChangeRequest passwordChangeRequest) {
 		authenticationHelper.setAuthentication(SecurityContextHolder.getContext());
-		
-		if(ActionEvaluator.isAdmin(authenticationHelper)) {
+
+		if (ActionEvaluator.isAdmin(authenticationHelper)) {
 			Optional<AdminUser> adminUserOptional = adminUserService.findFirstById(adminId);
-			
-			if(!adminUserOptional.isPresent()) {
-				return ResponseEntity.ok(new StandardResponse(false,"The "+UserTypes.ADMIN+" user with id : "+adminId+" does not exist !"));
+
+			if (!adminUserOptional.isPresent()) {
+				return ResponseEntity.ok(new StandardResponse(false,
+						"The " + UserTypes.ADMIN + " user with id : " + adminId + " does not exist !"));
 			}
-			
+
 			AdminUser adminUser = adminUserOptional.get();
-			
-				String encoded = adminUserService.encodePassword(passwordChangeRequest.getNewPassword());
-				adminUser.setPassword(encoded);				
-				adminUserService.saveAdminUser(adminUser);
-				return ResponseEntity.ok(new StandardResponse(true,"Password updated successfully !"));
-			
+
+			String encoded = adminUserService.encodePassword(passwordChangeRequest.getNewPassword());
+			adminUser.setPassword(encoded);
+			adminUserService.saveAdminUser(adminUser);
+			return ResponseEntity.ok(new StandardResponse(true, "Password updated successfully !"));
+
 		}
-		
-		return ResponseEntity.ok(new StandardResponse(false,StandardMessages.ADMIN_ONLY));
-	}
-	
-	
-	@DeleteMapping("/{adminId}")
-	public ResponseEntity<StandardResponse> deletePlacementCoordinator(@PathVariable long adminId){
-		authenticationHelper.setAuthentication(SecurityContextHolder.getContext());
-		
-		if(ActionEvaluator.isAdmin(authenticationHelper)) {
-			Optional<AdminUser> optional = adminUserService.findFirstById(adminId);
-			if(!optional.isPresent()) {
-				return ResponseEntity.ok(new StandardResponse(false,String.format("%S user with ID \"%d\" does not exist !",UserTypes.ADMIN,adminId)));
-			}else {
-				AdminUser adminUser = optional.get();
-				if(adminUser.getUsername().equals(authenticationHelper.getUsername())){
-					return ResponseEntity.ok(new StandardResponse(false,"You cannot delete yourself !"));
-				}
-				adminUserService.deleteAdminUser(adminUser);
-				return ResponseEntity.ok(new StandardResponse(false,String.format("%S user with ID \"%d\" was deleted successfully !",UserTypes.ADMIN,adminId)));				
-			}
-		}
-		
-		return ResponseEntity.ok(new StandardResponse(false,StandardMessages.ADMIN_ONLY));
+
+		return ResponseEntity.ok(new StandardResponse(false, StandardMessages.ADMIN_ONLY));
 	}
 
-	
-	
+	@DeleteMapping("/{adminId}")
+	public ResponseEntity<StandardResponse> deletePlacementCoordinator(@PathVariable long adminId) {
+		authenticationHelper.setAuthentication(SecurityContextHolder.getContext());
+
+		if (ActionEvaluator.isAdmin(authenticationHelper)) {
+			Optional<AdminUser> optional = adminUserService.findFirstById(adminId);
+			if (!optional.isPresent()) {
+				return ResponseEntity.ok(new StandardResponse(false,
+						String.format("%S user with ID \"%d\" does not exist !", UserTypes.ADMIN, adminId)));
+			} else {
+				AdminUser adminUser = optional.get();
+				if (adminUser.getUsername().equals(authenticationHelper.getUsername())) {
+					return ResponseEntity.ok(new StandardResponse(false, "You cannot delete yourself !"));
+				}
+				adminUserService.deleteAdminUser(adminUser);
+				return ResponseEntity.ok(new StandardResponse(false,
+						String.format("%S user with ID \"%d\" was deleted successfully !", UserTypes.ADMIN, adminId)));
+			}
+		}
+
+		return ResponseEntity.ok(new StandardResponse(false, StandardMessages.ADMIN_ONLY));
+	}
+
 	@GetMapping("/hello")
 	public ResponseEntity<?> hello() {
 //		
@@ -130,13 +133,13 @@ public class AdminController {
 //		AdminUser user = new AdminUser();
 //		user.setUsername("admin");
 //		user.setPassword("admin123");
-		
+
 		authenticationHelper.setAuthentication(SecurityContextHolder.getContext());
-		AdminUser user = (AdminUser)authenticationHelper.getUser();
-		
+		AdminUser user = (AdminUser) authenticationHelper.getUser();
+
 //		AdminUser user = adminUserService.findFirstByUsername(authenticationHelper.getUsername());
 
-		Map<Object,Object> map = new HashMap<>();
+		Map<Object, Object> map = new HashMap<>();
 		map.put("success", true);
 		map.put("message", "Hello World from admin !");
 		map.put("user", user);

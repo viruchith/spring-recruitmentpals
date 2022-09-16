@@ -16,39 +16,38 @@ public class AppAuthenticationManager implements AuthenticationManager {
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
-	
+
 	@Autowired
 	private UserDetailsService userDetailsService;
-	
+
 	@Override
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 		String[] userAndType = (authentication.getPrincipal() + "").split("\\|");
-	    
+
 		String username = userAndType[0];
-		
+
 		String type = userAndType[1];
-		
+
 		String password = authentication.getCredentials() + "";
-		
-		UserDetails user = userDetailsService.loadUserByUsername(authentication.getPrincipal()+"");
-		
-		
-		if(user==null) {
+
+		UserDetails user = userDetailsService.loadUserByUsername(authentication.getPrincipal() + "");
+
+		if (user == null) {
 			throw new BadCredentialsException("Incorrect Username (or) Email !");
 		}
-		
-		 System.out.println(authentication.getPrincipal()+ " : "+authentication.getCredentials());
-		 
-		 System.out.println(passwordEncoder.encode(password));
-		 
-		 System.out.println(passwordEncoder.matches(password,user.getPassword()));
-		 
-		 if (password.isEmpty() || !passwordEncoder.matches(password,user.getPassword())) {
-			        throw new BadCredentialsException("Incorrect Password");
-		 }
-		 
-		
-		return new UsernamePasswordAuthenticationToken(authentication.getPrincipal(), authentication.getCredentials(),authentication.getAuthorities());
+
+		System.out.println(authentication.getPrincipal() + " : " + authentication.getCredentials());
+
+		System.out.println(passwordEncoder.encode(password));
+
+		System.out.println(passwordEncoder.matches(password, user.getPassword()));
+
+		if (password.isEmpty() || !passwordEncoder.matches(password, user.getPassword())) {
+			throw new BadCredentialsException("Incorrect Password");
+		}
+
+		return new UsernamePasswordAuthenticationToken(authentication.getPrincipal(), authentication.getCredentials(),
+				authentication.getAuthorities());
 	}
 
 }

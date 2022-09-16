@@ -25,27 +25,27 @@ import lombok.Data;
 @Table(name = "recruitment_admin_users")
 @Data
 public class AdminUser {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id;
-	
+
 	@NotNull
 	@NotBlank
 	@Column(unique = true)
-	@Size(min = 5,max = 15,message = "username must be between 5 and 10 characters in length !")
-	@Pattern(regexp = "^[a-zA-z][a-zA-Z0-9_]{4,14}$",message = "Username can contain only alphabets, numbers and underscore only !")
+	@Size(min = 5, max = 15, message = "username must be between 5 and 10 characters in length !")
+	@Pattern(regexp = "^[a-zA-z][a-zA-Z0-9_]{4,14}$", message = "Username can contain only alphabets, numbers and underscore only !")
 	private String username;
-	
+
 	@NotNull
 	@NotBlank
-	@Size(min = 8 , message = "Password must be greater than 8 characters in length !")
+	@Size(min = 8, message = "Password must be greater than 8 characters in length !")
 	private String password;
-	
+
 	@CreatedDate
 	private Instant createdAt;
-	
+
 	@LastModifiedDate
 	private Instant updateAt;
-	
+
 }

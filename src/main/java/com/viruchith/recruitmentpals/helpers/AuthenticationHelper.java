@@ -17,15 +17,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Service
 public class AuthenticationHelper {
-	
+
 	@Autowired
 	private AdminUserService adminUserService;
-	
+
 	@Autowired
 	private PlacementCoordiantorService placementCoordiantorService;
-	
-	
-	private Map<String,Object> details;
+
+	private Map<String, Object> details;
 	private Authentication authentication;
 
 	public AuthenticationHelper(Authentication authentication) {
@@ -33,30 +32,30 @@ public class AuthenticationHelper {
 		this.authentication = authentication;
 		this.details = (Map<String, Object>) authentication.getDetails();
 	}
-	
+
 	public String getUserType() {
-		return details.get("userType")+"";
+		return details.get("userType") + "";
 	}
-	
-	public String getUsername(){
+
+	public String getUsername() {
 		return authentication.getName();
 	}
-	
+
 	public long getUserId() {
 		return (long) details.get("userId");
 	}
-	
-	public Object getUser(){
-		String userType = details.get("userType")+"";
-		if(userType.equals(UserTypes.ADMIN)) {
+
+	public Object getUser() {
+		String userType = details.get("userType") + "";
+		if (userType.equals(UserTypes.ADMIN)) {
 			return adminUserService.findFirstByUsername(getUsername());
-		}else if(userType.equals(UserTypes.COORDINATOR)) {
+		} else if (userType.equals(UserTypes.COORDINATOR)) {
 			return placementCoordiantorService.findFirstByEmail(getUsername());
 		}
-		
+
 		return null;
 	}
-	
+
 	public void setAuthentication(SecurityContext securityContext) {
 		this.authentication = securityContext.getAuthentication();
 		this.details = (Map<String, Object>) authentication.getDetails();

@@ -24,37 +24,39 @@ import lombok.Data;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "recruitment_academicgroups",uniqueConstraints = {@UniqueConstraint(name = "acdemicgroup_unique_constraint" ,columnNames = {"batchStartYear","batchEndYear","degree_id","branch_id"})})
+@Table(name = "recruitment_academicgroups", uniqueConstraints = {
+		@UniqueConstraint(name = "acdemicgroup_unique_constraint", columnNames = { "batchStartYear", "batchEndYear",
+				"degree_id", "branch_id" }) })
 @Data
 public class AcademicGroup {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id;
-	
+
 	@NotNull
 	@Min(1900)
 	@Max(9999)
 	private int batchStartYear;
-	
+
 	@NotNull
 	@Min(1900)
 	@Max(9999)
 	private int batchEndYear;
-	
+
 	@NotNull
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "degree_id")
 	private Degree degree;
-	
+
 	@NotNull
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "branch_id")
 	private Branch branch;
-	
+
 	@CreatedDate
 	private Instant createdAt;
-	
+
 	@LastModifiedDate
 	private Instant updateAt;
-	
+
 }
